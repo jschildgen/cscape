@@ -209,4 +209,5 @@ __marimo__/
 # Project-specific
 videos/*
 !videos/.gitkeep
-levels.py
+game.py
+config.ini

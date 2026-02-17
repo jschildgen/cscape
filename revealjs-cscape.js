@@ -34,6 +34,12 @@ const RevealCscape = (() => {
 			// Check if backend is running
 			deck.on('ready', () => {
 				fetch('http://localhost:5000/', { signal: AbortSignal.timeout(3000) })
+					.then(response => response.json())
+					.then(data => {
+						if (data.title) {
+							document.title = data.title + " - CScape";
+						}
+					})
 					.catch(() => {
 						const slide = deck.getSlides()[0];
 						if (slide) {
