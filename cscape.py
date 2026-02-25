@@ -39,6 +39,8 @@ def index():
     return jsonify(ok=True, title=config["general"]["title"])
 
 def pushmsg(message):
+    if not config.getboolean("telegram", "telegram_push"):
+        return
     token = config["telegram"]["token"]
     chat_id = config["telegram"]["chat_id"]
     url = f"https://api.telegram.org/bot{token}/sendMessage"

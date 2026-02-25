@@ -68,6 +68,46 @@ class Game:
 
 Each check method should start with `check_` and return `True` when the level is solved.
 
+### Parallel Checks with Vertical Slides
+
+You can create parallel challenges using reveal.js's vertical slides. When a horizontal slide contains multiple vertical child slides, each with its own `data-cscape-check`, all checks are evaluated simultaneously. As each check passes, its corresponding vertical slide is displayed. When all checks in the group are solved, the presentation advances to the next horizontal slide.
+
+```html
+<section>
+    <!-- This is a vertical slide group -->
+    <section data-cscape-check="check_file1"
+             data-background-video="videos/challenge1.mp4"
+             data-background-size="contain"
+             data-autoplay></section>
+    
+    <section data-cscape-check="check_file2"
+             data-background-video="videos/challenge2.mp4"
+             data-background-size="contain"
+             data-autoplay></section>
+    
+    <section data-cscape-check="check_file3"
+             data-background-video="videos/challenge3.mp4"
+             data-background-size="contain"
+             data-autoplay></section>
+</section>
+
+<!-- This slide plays automatically when all parallel challenges are solved -->
+<!-- Note: NO data-cscape-check attribute -->
+<section data-background-video="videos/congratulations.mp4"
+         data-background-size="contain"
+         data-autoplay></section>
+```
+
+In this example:
+- All three checks (`check_file1`, `check_file2`, `check_file3`) are monitored simultaneously
+- As each check passes, its video plays automatically
+- When all three challenges are completed, the presentation moves to the next main slide
+- This allows teams to work on different challenges in parallel
+
+**Important**: The slide that follows a vertical slide group should **not** have a `data-cscape-check` attribute. This ensures it plays automatically once all parallel challenges are solved, rather than waiting for an additional check to pass.
+
+The system polls all vertical slide checks every 5 seconds and displays solved slides as they complete.
+
 ## Running
 
 ```bash
