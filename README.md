@@ -14,7 +14,11 @@ CSCape turns a Raspberry Pi and a projector into a fully automated escape room f
 
 ## Setup
 
+It is recommended to create a virtual environment before you install the required Python packages:
+
 ```bash
+python -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
