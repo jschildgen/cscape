@@ -1,6 +1,7 @@
 const RevealCscape = (() => {
 	let deck;
 	let checkInterval;
+	let checkInterval_seconds = 5; // Default to 5 seconds
 	// State storage for vertical checks
 	const verticalCheckState = {};
 	let video_playing = false;
@@ -120,12 +121,13 @@ const RevealCscape = (() => {
 
 			// Check if backend is running
 			deck.on('ready', () => {
-				fetch('http://localhost:5000/', { signal: AbortSignal.timeout(3000) })
+				fetch('http://localhost:5000/start', { signal: AbortSignal.timeout(3000) })
 					.then(response => response.json())
 					.then(data => {
 						if (data.title) {
 							document.title = data.title + " - CScape";
 						}
+						checkInterval_seconds = data.checkInterval || 5; // Use backend value or default to 5 seconds
 					})
 					.catch(() => {
 						const slide = deck.getSlides()[0];
@@ -152,7 +154,7 @@ const RevealCscape = (() => {
 				});
 			});
 
-			checkInterval = setInterval(check, 5000);
+			checkInterval = setInterval(check, checkInterval_seconds * 1000);
 
 			// Press 'r' to replay the current slide's background video
 			document.addEventListener('keydown', (e) => {

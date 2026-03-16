@@ -2,10 +2,11 @@ import configparser
 import logging
 
 import requests
-from flask import Flask, jsonify, abort
+from flask import Flask, jsonify, abort, send_from_directory
 from flask_cors import CORS
 
 from game import Game
+import webbrowser
 
 logging.basicConfig(level=logging.DEBUG, format="%(asctime)s %(levelname)s %(message)s")
 
@@ -34,9 +35,20 @@ def check(check):
     return jsonify(solved=result)
 
 
-@app.route("/")
+@app.route("/start")
+def start():
+    pushmsg("Escape room started: " + config["general"]["title"])
+    return jsonify(ok=True, 
+                   title=config["general"]["title"], 
+                   check_interval_seconds=config["general"].getint("check_interval_seconds", 5))
+
+@app.route('/<path:path>')
+def serve_static(path):
+    return send_from_directory('.', path)
+
+@app.route('/')
 def index():
-    return jsonify(ok=True, title=config["general"]["title"])
+    return send_from_directory('.', 'index.html')
 
 def pushmsg(message):
     if not config.getboolean("telegram", "telegram_push"):
@@ -49,4 +61,8 @@ def pushmsg(message):
 
 if __name__ == "__main__":
     game = Game()
+
+    url = "http://127.0.0.1:5000"
+    webbrowser.open(url)
+
     app.run(host="0.0.0.0", port=5000)
