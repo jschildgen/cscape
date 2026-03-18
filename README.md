@@ -27,6 +27,7 @@ Copy the example files and fill in your values:
 ```bash
 cp config.example.ini config.ini
 cp game.example.py game.py
+cp index.example.html index.html
 ```
 
 Add your video files to the `videos/` directory.
@@ -114,9 +115,13 @@ The system polls all vertical slide checks every 5 seconds and displays solved s
 
 ## Running
 
+The game now accepts command-line arguments for configuration:
+
 ```bash
-python cscape.py
+python game.py
 ```
+
+The `game.py` script instantiates the `Game` class and passes it to `cscape.run()`, which starts the Flask server on port 5000 and opens the browser automatically.
 
 Then open `index.html` in a browser on the same machine. The backend runs on port 5000.
 
@@ -151,7 +156,7 @@ media.autoplay.default = 0
 |------|---------|
 | `index.html` | Presentation with all slides/levels |
 | `cscape.py` | Flask backend that runs checks and sends Telegram notifications |
-| `game.py` | Your game logic — `Game` class with `__init__` and `check_*` methods |
+| `game.py` | Your game logic — `Game` class with `__init__` and `check_*` methods; calls `cscape.run()` |
 | `game.example.py` | Template for `game.py` |
 | `config.ini` | Configuration (title, Telegram credentials) |
 | `config.example.ini` | Template for `config.ini` |

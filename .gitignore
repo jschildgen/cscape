@@ -211,3 +211,4 @@ videos/*
 !videos/.gitkeep
 game.py
 config.ini
+index.html

@@ -5,7 +5,6 @@ import requests
 from flask import Flask, jsonify, abort, send_from_directory
 from flask_cors import CORS
 
-from game import Game
 import webbrowser
 
 logging.basicConfig(level=logging.DEBUG, format="%(asctime)s %(levelname)s %(message)s")
@@ -13,18 +12,14 @@ logging.basicConfig(level=logging.DEBUG, format="%(asctime)s %(levelname)s %(mes
 config = configparser.ConfigParser()
 config.read("config.ini")
 
-
-
-
 app = Flask(__name__)
 CORS(app)
 
-
-
+game_instance = None
 
 @app.route("/check/<check>")
 def check(check):
-    fn = getattr(game, check, None)
+    fn = getattr(game_instance, check, None)
     if not callable(fn):
         logging.warning("Unknown check: %s", check)
         return abort(404)
@@ -42,6 +37,7 @@ def start():
                    title=config["general"]["title"], 
                    check_interval_seconds=config["general"].getint("check_interval_seconds", 5))
 
+# Serve static files
 @app.route('/<path:path>')
 def serve_static(path):
     return send_from_directory('.', path)
@@ -59,9 +55,9 @@ def pushmsg(message):
     payload = {"chat_id": chat_id, "text": message}
     requests.post(url, json=payload)
 
-if __name__ == "__main__":
-    game = Game()
-
+def run(game):
+    global game_instance
+    game_instance = game
     url = "http://127.0.0.1:5000"
     webbrowser.open(url)
 
