@@ -15,9 +15,13 @@ class Game:
         return False
     
     # If you want to trigger some side effect when a level is solved, define a method
-    # with the same name as the check method, but with "_action" suffix, e.g. "check_example_action".
+    # and annotate it with @cscape.action_for, referencing the check method. 
+    # For example, the following method will be called when check_example() returns True.
+    # You can reuse a single action for multiple checks by passing a comma-separated list 
+    # of check method names, for example: @cscape.action_for("check_example1, check_example2"])
 
-    def check_example_action(self):
+    @cscape.action_for("check_example")
+    def example_solved(self):
         pass
 
 

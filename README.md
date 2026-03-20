@@ -76,17 +76,29 @@ Each check method should start with `check_` and return `True` when the level is
 
 ### Actions
 
-Optionally, you can define actions that are triggered when a level is solved. They are executed on the Python backend additionally to the slide change / video playback within the browser. To do this, create a method with the same name as the check method, but with the `_action` suffix. For example, if you have a check method named `check_example`, you can define an action method named `check_example_action`. This action method will be called when the check method returns `True`. This allows you to perform side effects on the backend, such as sending an email, updating the database, or turning on a light via remote control.
+Actions allow you to execute backend code when a level is solved. Use the `@action_for` decorator to register actions for one or more check methods. For example, the following action will run when `check_example()` returns `True`:
 
 ```python
 class Game:
     def check_example(self):
-        return row_count("answers") >= 5
+        ...
 
-    def check_example_action(self):
-        # This method is called when check_example returns True
-        print("Example level solved!")
+    @cscape.action_for("check_example")
+    def example_action(self):
+        # Runs when check_example returns True
+        ...
 ```
+
+You can reuse a single action for multiple checks by passing a list of check method names:
+
+```python
+@cscape.action_for("check_example1, check_example2")
+def example_action(self):
+    # Runs when either check_example1 or check_example2 returns True
+    ...
+```
+
+Use actions for side effects like sending notifications, updating databases, controlling external devices, or triggering physical effects in your escape room (e.g., turning on the light via remote control).
 
 ### Parallel Checks with Vertical Slides
 

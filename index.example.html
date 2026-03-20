@@ -47,7 +47,10 @@
 				controls: false,
 				progress: false,
 				transition: 'none',
-				keyboard: { 27: null, 83: null }, // don't do anything when ESC or S is pressed 
+				keyboard: {
+					27: function () { alert("Close with Ctrl+W"); },  // Esc 
+					83: null 							 // disable 'S' key (speaker mode)
+				},
 
 				// Learn about plugins: https://revealjs.com/plugins/
 				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealCscape ]

@@ -17,6 +17,23 @@ CORS(app)
 
 game_instance = None
 
+# Action registry to map check functions to their action functions
+_action_registry = {}
+
+def action_for(check_function_name):
+    """Decorator to register an action function for one or more check functions.
+    `check_function_name` can be a single name or a comma-separated list.
+    """
+    names = [n.strip() for n in str(check_function_name).split(",") if n.strip()]
+
+    def decorator(action_function):
+        for name in names:
+            _action_registry[name] = action_function
+            logging.debug(f"Registered action for {name}: {action_function.__name__}")
+        return action_function
+
+    return decorator
+
 @app.route("/check/<check>")
 def check(check):
     fn = getattr(game_instance, check, None)
@@ -28,14 +45,14 @@ def check(check):
     if result:
         pushmsg(f"Level solved: {check} # {game_instance.title}")
 
-        # If action function is defined, call it when the check is solved.
-        action_fn = getattr(game_instance, f"{check}_action", None)
-        if callable(action_fn):
-            logging.debug(f"Calling {check}_action")
+        # Check if an action is registered for this check
+        action_fn = _action_registry.get(check)
+        if action_fn:
+            logging.debug(f"Calling action for {check}")
             try:
-                action_fn()
+                action_fn(game_instance)
             except Exception as e:
-                logging.error("Error in action for check %s: %s", check, e) 
+                logging.error("Error in action for check %s: %s", check, e)
 
     return jsonify(solved=result)
 
