@@ -13,6 +13,12 @@ class Game:
     
     def check_example(self):
         return False
+    
+    # If you want to trigger some side effect when a level is solved, define a method
+    # with the same name as the check method, but with "_action" suffix, e.g. "check_example_action".
+
+    def check_example_action(self):
+        pass
 
 
 # Start the game

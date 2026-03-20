@@ -27,6 +27,16 @@ def check(check):
     logging.debug("Check %s: solved=%s", check, result)
     if result:
         pushmsg(f"Level solved: {check} # {game_instance.title}")
+
+        # If action function is defined, call it when the check is solved.
+        action_fn = getattr(game_instance, f"{check}_action", None)
+        if callable(action_fn):
+            logging.debug(f"Calling {check}_action")
+            try:
+                action_fn()
+            except Exception as e:
+                logging.error("Error in action for check %s: %s", check, e) 
+
     return jsonify(solved=result)
 
 

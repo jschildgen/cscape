@@ -74,6 +74,20 @@ class Game:
 
 Each check method should start with `check_` and return `True` when the level is solved.
 
+### Actions
+
+Optionally, you can define actions that are triggered when a level is solved. They are executed on the Python backend additionally to the slide change / video playback within the browser. To do this, create a method with the same name as the check method, but with the `_action` suffix. For example, if you have a check method named `check_example`, you can define an action method named `check_example_action`. This action method will be called when the check method returns `True`. This allows you to perform side effects on the backend, such as sending an email, updating the database, or turning on a light via remote control.
+
+```python
+class Game:
+    def check_example(self):
+        return row_count("answers") >= 5
+
+    def check_example_action(self):
+        # This method is called when check_example returns True
+        print("Example level solved!")
+```
+
 ### Parallel Checks with Vertical Slides
 
 You can create parallel challenges using reveal.js's vertical slides. When a horizontal slide contains multiple vertical child slides, each with its own `data-cscape-check`, all checks are evaluated simultaneously. As each check passes, its corresponding vertical slide is displayed. When all checks in the group are solved, the presentation advances to the next horizontal slide.
@@ -159,7 +173,7 @@ Alternatively, you can use the provided `run.sh` script, which starts Firefox in
 
 | Key | Action |
 |-----|--------|
-| `R`, Enter | Replay the current slide's background video |
+| `R`, `Enter` | Replay the current slide's background video |
 | `S` | Stop the current video (pause and reset) |
 | `P` | Toggle play/pause |
 | `Ctrl+W` | Close the browser window |
