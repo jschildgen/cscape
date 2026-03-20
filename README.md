@@ -144,11 +144,29 @@ Open `about:config` and set:
 media.autoplay.default = 0
 ```
 
+Alternatively, you can use the provided `run.sh` script, which starts Firefox in kiosk mode with autoplay enabled:
+
+## Using run.sh
+
+For convenience, you can use the provided `run.sh` script to start the escape room:
+
+```bash
+./run.sh
+```
+
+This script starts the backend and opens Firefox in kiosk mode with autoplay enabled. When you close Firefox (e.g., by pressing Ctrl+W), the Python backend server will automatically terminate as well.
+
 ## Keyboard Shortcuts
 
 | Key | Action |
 |-----|--------|
 | `R` | Replay the current slide's background video |
+| `S` | Stop the current video (pause and reset) |
+| `P` | Toggle play/pause |
+| `Ctrl+W` | Close the browser window |
+| `←` | Navigate to previous slide |
+| `→` | Navigate to next slide |
+
 
 ## Project Structure
 
@@ -158,7 +176,7 @@ media.autoplay.default = 0
 | `cscape.py` | Flask backend that runs checks and sends Telegram notifications |
 | `game.py` | Your game logic — `Game` class with `__init__` and `check_*` methods; calls `cscape.run()` |
 | `game.example.py` | Template for `game.py` |
-| `config.ini` | Configuration (title, Telegram credentials) |
+| `config.ini` | Configuration (Telegram credentials and more) |
 | `config.example.ini` | Template for `config.ini` |
 | `revealjs-cscape.js` | reveal.js plugin that polls the backend and controls slide progression |
 | `reveal.js/` | Vendored reveal.js framework |

@@ -156,15 +156,31 @@ const RevealCscape = (() => {
 
 			checkInterval = setInterval(check, checkInterval_seconds * 1000);
 
-			// Press 'r' to replay the current slide's background video
 			document.addEventListener('keydown', (e) => {
-				if (e.key === 'r' || e.key === 'R') {
-					const video = getBackgroundVideo();
-					if (video) {
-						video.style.display = '';
-						video.currentTime = 0;
+				const video = getBackgroundVideo();
+				if (!video) return;
+
+				if (e.key === 'r' || e.key === 'R' || e.key === 'Enter') {
+					// Replay
+					video.style.display = '';
+					video.currentTime = 0;
+					video.play();
+					video_playing = true;
+				}
+				else if (e.key === 's' || e.key === 'S') {
+					// Stop: pause and reset to beginning
+					video.pause();
+					video.currentTime = 0;
+					video_playing = false;
+				}
+				else if (e.key === 'p' || e.key === 'P') {
+					// Toggle play/pause
+					if (video.paused) {
 						video.play();
 						video_playing = true;
+					} else {
+						video.pause();
+						video_playing = false;
 					}
 				}
 			});

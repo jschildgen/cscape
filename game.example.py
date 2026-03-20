@@ -1,6 +1,8 @@
 import cscape
 
 class Game:
+    title = "Example Escape Room"
+
     def __init__(self):
         """Called once when the game starts. Use this to prepare the environment."""
         pass

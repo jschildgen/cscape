@@ -26,15 +26,15 @@ def check(check):
     result = fn()
     logging.debug("Check %s: solved=%s", check, result)
     if result:
-        pushmsg(f"Level solved: {check} # {config['general']['title']}")
+        pushmsg(f"Level solved: {check} # {game_instance.title}")
     return jsonify(solved=result)
 
 
 @app.route("/start")
 def start():
-    pushmsg("Escape room started: " + config["general"]["title"])
+    pushmsg("Escape room started: " + game_instance.title)
     return jsonify(ok=True, 
-                   title=config["general"]["title"], 
+                   title=game_instance.title, 
                    check_interval_seconds=config["general"].getint("check_interval_seconds", 5))
 
 # Serve static files
@@ -55,10 +55,12 @@ def pushmsg(message):
     payload = {"chat_id": chat_id, "text": message}
     requests.post(url, json=payload)
 
-def run(game):
+def run(game, open_browser=False):
     global game_instance
     game_instance = game
     url = "http://127.0.0.1:5000"
-    webbrowser.open(url)
+    
+    if open_browser:
+        webbrowser.open(url)
 
     app.run(host="0.0.0.0", port=5000)
