@@ -38,9 +38,10 @@ Edit `config.ini`:
 
 ```ini
 [general]
-title = My Escape Room
+check_interval_seconds = 5
 
 [telegram]
+telegram_push = false
 token = YOUR_BOT_TOKEN
 chat_id = YOUR_CHAT_ID
 ```
@@ -115,13 +116,21 @@ The system polls all vertical slide checks every 5 seconds and displays solved s
 
 ## Running
 
-The game now accepts command-line arguments for configuration:
+For convenience, you can use the provided `run.sh` script to start the escape room:
+
+```bash
+./run.sh
+```
+
+This script starts the backend and opens Firefox in kiosk mode with autoplay enabled. When you close Firefox (e.g., by pressing Ctrl+W), the Python backend server will automatically terminate as well.
+
+## Manual Startup
 
 ```bash
 python game.py
 ```
 
-The `game.py` script instantiates the `Game` class and passes it to `cscape.run()`, which starts the Flask server on port 5000 and opens the browser automatically.
+The `game.py` script instantiates the `Game` class and passes it to `cscape.run()`, which starts the Flask server on port 5000. 
 
 Then open `index.html` in a browser on the same machine. The backend runs on port 5000.
 
@@ -144,23 +153,13 @@ Open `about:config` and set:
 media.autoplay.default = 0
 ```
 
-Alternatively, you can use the provided `run.sh` script, which starts Firefox in kiosk mode with autoplay enabled:
-
-## Using run.sh
-
-For convenience, you can use the provided `run.sh` script to start the escape room:
-
-```bash
-./run.sh
-```
-
-This script starts the backend and opens Firefox in kiosk mode with autoplay enabled. When you close Firefox (e.g., by pressing Ctrl+W), the Python backend server will automatically terminate as well.
+Alternatively, you can use the provided `run.sh` script, which starts Firefox in kiosk mode with autoplay enabled (see above).
 
 ## Keyboard Shortcuts
 
 | Key | Action |
 |-----|--------|
-| `R` | Replay the current slide's background video |
+| `R`, Enter | Replay the current slide's background video |
 | `S` | Stop the current video (pause and reset) |
 | `P` | Toggle play/pause |
 | `Ctrl+W` | Close the browser window |
@@ -172,6 +171,7 @@ This script starts the backend and opens Firefox in kiosk mode with autoplay ena
 
 | File | Purpose |
 |------|---------|
+| `index.example.html` | Template for `index.html` |
 | `index.html` | Presentation with all slides/levels |
 | `cscape.py` | Flask backend that runs checks and sends Telegram notifications |
 | `game.py` | Your game logic — `Game` class with `__init__` and `check_*` methods; calls `cscape.run()` |
