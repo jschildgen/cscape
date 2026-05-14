@@ -6,7 +6,7 @@ cd "$(dirname "$0")"
 source .venv/bin/activate
 
 # Start the backend in the background and capture its PID
-python game.py &
+python game.py "$@" &
 BACKEND_PID=$!
 
 echo "Waiting for backend..."
@@ -19,7 +19,7 @@ PROFILE_DIR=$(mktemp -d)
 cat > "$PROFILE_DIR/user.js" <<EOF
 user_pref("media.autoplay.default", 0);
 EOF
-firefox -no-remote -new-instance -kiosk -profile "$PROFILE_DIR" http://localhost:5000 &
+firefox -no-remote -new-instance -profile "$PROFILE_DIR" http://localhost:5000 &
 FIREFOX_PID=$!
 
 # Function to kill both processes

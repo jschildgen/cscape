@@ -19,10 +19,17 @@ class Game:
     # For example, the following method will be called when check_example() returns True.
     # You can reuse a single action for multiple checks by passing a comma-separated list 
     # of check method names, for example: @cscape.action_for("check_example1, check_example2"])
+    # Actions for parts of parallel checks: @cscape.action_for("check_parallel/b")
 
     @cscape.action_for("check_example")
     def example_solved(self):
         pass
+
+    # The following check checks multiple parts, e. g. ['a', 'b', 'c']
+    # Return one of those elements (e.g. 'b') if a part is solved.
+    # Return None if none of them is solved.
+    def check_parallel(self, parts):
+        return None
 
 
 # Start the game

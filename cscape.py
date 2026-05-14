@@ -2,8 +2,9 @@ import configparser
 import logging
 
 import requests
-from flask import Flask, jsonify, abort, send_from_directory
+from flask import Flask, jsonify, abort, send_from_directory, request
 from flask_cors import CORS
+
 
 import webbrowser
 
@@ -16,6 +17,8 @@ app = Flask(__name__)
 CORS(app)
 
 game_instance = None
+
+solved_levels = set()
 
 # Action registry to map check functions to their action functions
 _action_registry = {}
@@ -40,19 +43,31 @@ def check(check):
     if not callable(fn):
         logging.warning("Unknown check: %s", check)
         return abort(404)
-    result = fn()
+    
+    parts_param = request.args.get('parts')
+    if parts_param:
+        parts = parts_param.split('|')
+        result = fn(parts)
+        if result == None: 
+            result = False
+    else:
+        result = fn()
+
     logging.debug("Check %s: solved=%s", check, result)
-    if result:
-        pushmsg(f"Level solved: {check} # {game_instance.title}")
+    if result != False:
+        solved_task = check+"/"+result if isinstance(result, str) else check
+
+        solved_levels.add(solved_task)
+        pushmsg(f"{game_instance.title} - Level {len(solved_levels)} solved: {solved_task}")
 
         # Check if an action is registered for this check
-        action_fn = _action_registry.get(check)
+        action_fn = _action_registry.get(solved_task)
         if action_fn:
-            logging.debug(f"Calling action for {check}")
+            logging.debug(f"Calling action for {solved_task}")
             try:
                 action_fn(game_instance)
             except Exception as e:
-                logging.error("Error in action for check %s: %s", check, e)
+                logging.error("Error in action for check %s: %s", solved_task, e)
 
     return jsonify(solved=result)
 
@@ -82,7 +97,7 @@ def pushmsg(message):
     payload = {"chat_id": chat_id, "text": message}
     requests.post(url, json=payload)
 
-def run(game, open_browser=False):
+def run(game, open_browser=False, threaded=False):
     global game_instance
     game_instance = game
     url = "http://127.0.0.1:5000"
@@ -90,4 +105,4 @@ def run(game, open_browser=False):
     if open_browser:
         webbrowser.open(url)
 
-    app.run(host="0.0.0.0", port=5000)
+    app.run(host="0.0.0.0", port=5000, threaded=threaded)

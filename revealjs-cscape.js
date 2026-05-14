@@ -1,10 +1,15 @@
+AAA = null;
+
 const RevealCscape = (() => {
 	let deck;
 	let checkInterval;
 	let checkInterval_seconds = 5; // Default to 5 seconds
 	// State storage for vertical checks
-	const verticalCheckState = {};
+	const all_parts = {}
+	const not_yet_solved = {};
 	let video_playing = false;
+
+	let currently_checking = false;
 
 	function getBackgroundVideo() {
 		const bg = document.querySelector('.slide-background.present video');
@@ -19,53 +24,57 @@ const RevealCscape = (() => {
 	function checkAllVertical(slide, indexh) {
 		const slideId = slide.id || `slide-${deck.getSlides().indexOf(slide)}`;
 		const verticalSlides = slide.querySelectorAll('section');
-		
-		// Initialize state if not present
-		if (!verticalCheckState[slideId]) {
-			verticalCheckState[slideId] = {
-				total: verticalSlides.length,
-				solved: new Set(),
-			};
-			console.log(`[CSCAPE] Vertical group ${slideId}: ${verticalSlides.length} slides to solve`);
+
+		const checkName = slide.dataset.cscapeCheck;
+		if (!checkName) return;
+
+		if (!not_yet_solved[slideId]) {
+			// All parts, e.g. ['this', 'that']
+			all_parts[slideId] = Array.from(verticalSlides).map(slide => slide.getAttribute('data-cscape-check-part'));
+			
+			// Parts that are not solved yet, e.g. ['this', 'that']
+			not_yet_solved[slideId] = new Set(all_parts[slideId]);
 		}
 
-		const state = verticalCheckState[slideId];
-
-		// Check if all are solved
-		if (state.solved.size === state.total) {
-			console.log(`[CSCAPE] All vertical slides solved! Next horizontal slide.`);
+		// if all parts solved => next horizontal slide
+		if(not_yet_solved[slideId].size == 0) {
 			deck.slide(indexh + 1);
+			return;
 		}
 
-		// Check all vertical child slides
-		verticalSlides.forEach((verticalSlide, index) => {
-			const checkName = verticalSlide.dataset.cscapeCheck;
-			if (checkName && !state.solved.has(checkName)) {
-				fetch(`http://localhost:5000/check/${checkName}`, { signal: AbortSignal.timeout(3000) })
-					.then(response => response.json())
-					.then(data => {
-						if (data.solved) {
-							state.solved.add(checkName);
-							
-							// Jump to the solved slide
-							deck.slide(indexh, index);
-							console.log(`[CSCAPE] Showing solved vertical slide ${index} (${state.solved.size}/${state.total})`);
-						} else {
-							console.log(`[CSCAPE] ${checkName} not yet solved`);
-						}
-					})
-					.catch(() => {
-						// Error silently handled
-					});
-			}
-		});
+		currently_checking = true;
+
+		console.debug("All parts: "+JSON.stringify(all_parts[slideId]));
+		console.debug("Checking parts: "+JSON.stringify(Array.from(not_yet_solved[slideId])));
+
+		const params = new URLSearchParams({ parts: Array.from(not_yet_solved[slideId]).join('|') });
+
+		fetch(`http://localhost:5000/check/${checkName}?${params.toString()}`, { signal: AbortSignal.timeout(30000) })
+			.then(response => response.json())
+			.then(data => {
+				if (data.solved === false) {
+					console.log(`[CSCAPE] ${checkName} not solved yet`);
+				} else {
+					console.log(`[CSCAPE] ${checkName}/${data.solved} solved`);
+					not_yet_solved[slideId].delete(data.solved);
+					deck.slide(indexh, all_parts[slideId].indexOf(data.solved));
+				}
+			})
+			.catch(error => {
+				console.log(`[CSCAPE] Error checking ${checkName}:`, error.message);
+			})
+			.finally(() => {
+				currently_checking = false;
+			});
+
 	}
 
 	function checkSingle(nextSlide) {
 		const checkName = nextSlide.dataset.cscapeCheck;
 		if (!checkName) return;
 
-		fetch(`http://localhost:5000/check/${checkName}`, { signal: AbortSignal.timeout(3000) })
+		currently_checking = true;
+		fetch(`http://localhost:5000/check/${checkName}`, { signal: AbortSignal.timeout(30000) })
 			.then(response => response.json())
 			.then(data => {
 				if (data.solved) {
@@ -77,12 +86,20 @@ const RevealCscape = (() => {
 			})
 			.catch(error => {
 				console.log(`[CSCAPE] Error checking ${checkName}:`, error.message);
+			})
+			.finally(() => {
+				currently_checking = false;
 			});
 	}
 
 	function check() {
 		// Skip checking when video is playing
 		if (video_playing) {
+			return;
+		}
+
+		// Skip checking if we're already in the middle of a check to prevent overlapping checks
+		if (currently_checking) {
 			return;
 		}
 		
@@ -97,7 +114,7 @@ const RevealCscape = (() => {
 			return;
 		}
 
-		console.log(`[CSCAPE] We're on slide ${currentIndex}`);
+		console.debug(`[CSCAPE] We're on slide ${currentIndex}`);
 
 		// Check if current slide has vertical children
 		if (hasVerticalParent(currentSlide)) {
@@ -127,15 +144,50 @@ const RevealCscape = (() => {
 						if (data.title) {
 							document.title = data.title + " - CScape";
 						}
-						checkInterval_seconds = data.checkInterval || 5; // Use backend value or default to 5 seconds
+						checkInterval_seconds = data.check_interval_seconds || 5; // Use backend value or default to 5 seconds
+						const slide = deck.getSlides()[0];
+						if (slide) {
+							slide.innerHTML = '';
+							
+							// Show a hint if not in fullscreen
+							const fsHint = document.createElement('div');
+							fsHint.textContent = 'Press F to go fullscreen';
+							fsHint.style.position = 'fixed';
+							fsHint.style.left = '50%';
+							fsHint.style.bottom = '16px';
+							fsHint.style.transform = 'translateX(-50%)';
+							fsHint.style.padding = '8px 12px';
+							fsHint.style.background = 'rgba(0,0,0,0.75)';
+							fsHint.style.color = '#fff';
+							fsHint.style.fontSize = '16px';
+							fsHint.style.borderRadius = '6px';
+							fsHint.style.zIndex = '9999';
+							fsHint.style.pointerEvents = 'none';
+							fsHint.style.display = 'none';
+							document.body.appendChild(fsHint);
+
+							const updateFsHint = () => {
+								const isFs = !!document.fullscreenElement;
+								fsHint.style.display = isFs ? 'none' : 'block';
+							};
+
+							updateFsHint();
+							document.addEventListener('fullscreenchange', updateFsHint);
+							window.addEventListener('resize', updateFsHint);
+						}
 					})
 					.catch(() => {
 						const slide = deck.getSlides()[0];
 						if (slide) {
-							slide.innerHTML = '<p style="color:red;font-size:0.5em;">Backend not reachable at localhost:5000. Please start cscape.py.</p>';
+							slide.innerHTML = `<p style="color:red;font-size:0.5em;">
+								Backend not reachable at localhost:5000. Please start cscape.py.
+								<br>Fehlermeldung: ${error?.message || 'Unknown error'}
+							</p>`;
 						}
 					});
 			});
+
+
 
 			// Hide background video when it ends so the slide turns black
 			deck.on('slidechanged', () => {

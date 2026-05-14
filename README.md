@@ -63,6 +63,8 @@ Then implement the corresponding check in `game.py`:
 
 ```python
 class Game:
+    title = "My Escape Room"
+
     def __init__(self):
         # Prepare the environment when the server starts
         pass
@@ -89,12 +91,21 @@ class Game:
         ...
 ```
 
-You can reuse a single action for multiple checks by passing a list of check method names:
+You can reuse a single action for multiple checks by passing a comma-separated list of check method names:
 
 ```python
 @cscape.action_for("check_example1, check_example2")
 def example_action(self):
     # Runs when either check_example1 or check_example2 returns True
+    ...
+```
+
+When an action should be for a part of a parallel check (see next section), use this syntax:
+
+```python
+@cscape.action_for("check_parallel/b")
+def example_action(self):
+    # Runs when part b of check_parallel is solved (this is when check_parallel returns 'b')
     ...
 ```
 
@@ -105,19 +116,19 @@ Use actions for side effects like sending notifications, updating databases, con
 You can create parallel challenges using reveal.js's vertical slides. When a horizontal slide contains multiple vertical child slides, each with its own `data-cscape-check`, all checks are evaluated simultaneously. As each check passes, its corresponding vertical slide is displayed. When all checks in the group are solved, the presentation advances to the next horizontal slide.
 
 ```html
-<section>
+<section data-cscape-check="check_files">
     <!-- This is a vertical slide group -->
-    <section data-cscape-check="check_file1"
+    <section data-cscape-check-part="file1"
              data-background-video="videos/challenge1.mp4"
              data-background-size="contain"
              data-autoplay></section>
     
-    <section data-cscape-check="check_file2"
+    <section data-cscape-check-part="file2"
              data-background-video="videos/challenge2.mp4"
              data-background-size="contain"
              data-autoplay></section>
     
-    <section data-cscape-check="check_file3"
+    <section data-cscape-check-part="file3"
              data-background-video="videos/challenge3.mp4"
              data-background-size="contain"
              data-autoplay></section>
@@ -130,15 +141,24 @@ You can create parallel challenges using reveal.js's vertical slides. When a hor
          data-autoplay></section>
 ```
 
+In the Python code, check methods for parallel checks have an additional parameter `parts`, a list of parts (in this example: `['file1', 'file2', 'file3']`) which are not solved yet.
+
+```python
+def check_files(self, parts):
+    return None   # or one element of parts that was solved
+```
+
+Instead of returning True or False, parallel checks return the name of the part when it was solved. When none of the parts were solved, it returns None.
+
 In this example:
-- All three checks (`check_file1`, `check_file2`, `check_file3`) are monitored simultaneously
-- As each check passes, its video plays automatically
-- When all three challenges are completed, the presentation moves to the next main slide
+- The check (`check_files`) needs to checks all remaining parts simultaneously
+- As a part check passes, its video plays automatically
+- When all parts are completed, the presentation moves to the next main slide
 - This allows teams to work on different challenges in parallel
 
 **Important**: The slide that follows a vertical slide group should **not** have a `data-cscape-check` attribute. This ensures it plays automatically once all parallel challenges are solved, rather than waiting for an additional check to pass.
 
-The system polls all vertical slide checks every 5 seconds and displays solved slides as they complete.
+The system polls the check method every 5 seconds and displays solved slides as they complete.
 
 ## Running
 
@@ -148,7 +168,7 @@ For convenience, you can use the provided `run.sh` script to start the escape ro
 ./run.sh
 ```
 
-This script starts the backend and opens Firefox in kiosk mode with autoplay enabled. When you close Firefox (e.g., by pressing Ctrl+W), the Python backend server will automatically terminate as well.
+This script starts the backend and opens Firefox with autoplay enabled. When you close Firefox (e.g., by pressing Ctrl+W), the Python backend server will automatically terminate as well.
 
 ## Manual Startup
 
