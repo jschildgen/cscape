@@ -1,5 +1,3 @@
-AAA = null;
-
 const RevealCscape = (() => {
 	let deck;
 	let checkInterval;
