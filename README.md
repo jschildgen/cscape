@@ -160,6 +160,37 @@ In this example:
 
 The system polls the check method every 5 seconds and displays solved slides as they complete.
 
+## Game Data Store
+The Game Data Store is a key-value store where the game.py, the frontend HTML, and external services (via an API endpoint) can store and load player-specific data, e. g. player names or submission data.
+
+Store and get data values within a check method or an action in the `game.py`:
+
+```python
+def check_something(self):
+    # ...
+    cscape.store("name", name)
+    return cscape.get("solution") == "something"
+```
+
+Within the slides HTML, values for keys from the Game Data Store can be loaded:
+
+```html
+Hello <span data-cscape-get="name"></span>!
+```
+
+Two endpoints can be used to store and get Game Data Store values via a GET/POST API:
+
+- `GET http://<ip>//game_data_store` (returns the full Game Data Store as JSON: `{"key1": "value1", ... }`)
+- `POST http://<ip>//game_data_store` (accepts JSON data: `{"key1": "value1", ... }`)
+
+The following data is automatically stored in the Game Data Store by CSCape:
+
+- `cscape-ip` - IP address of the CSCape backend server
+- `cscape-title` -  Title of the Escape Room (`title` variable in `Game` class)
+- `cscape-session-id` - Unique UUID of the game session
+- `cscape-start-timestamp` - Timestamp when the game was started
+- `cscape-current-level` - Progess (starts with 0, increments by 1 each time a level is solved)
+
 ## Running
 
 For convenience, you can use the provided `run.sh` script to start the escape room:

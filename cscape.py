@@ -2,9 +2,11 @@ import configparser
 import logging
 
 import requests
+import socket
+import datetime
+import uuid
 from flask import Flask, jsonify, abort, send_from_directory, request
 from flask_cors import CORS
-
 
 import webbrowser
 
@@ -17,6 +19,8 @@ app = Flask(__name__)
 CORS(app)
 
 game_instance = None
+
+game_data_store = {}
 
 solved_levels = set()
 
@@ -58,6 +62,7 @@ def check(check):
         solved_task = check+"/"+result if isinstance(result, str) else check
 
         solved_levels.add(solved_task)
+        store("cscape-current-level", len(solved_levels))
         pushmsg(f"{game_instance.title} - Level {len(solved_levels)} solved: {solved_task}")
 
         # Check if an action is registered for this check
@@ -71,13 +76,60 @@ def check(check):
 
     return jsonify(solved=result)
 
+# Game Data Store
+
+def get(key):
+    return game_data_store.get(key, None)
+
+def store(key, value, source=None, push=False):
+    game_data_store[key] = value
+    message = f"{key}={value}" + ("" if source is None else " (via "+source+")")
+    logging.info(message)
+    if push:
+        pushmsg(message)
+
+def __get_local_ip():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+    try:
+        s.connect(("8.8.8.8", 80))
+        ip = s.getsockname()[0]
+    finally:
+        s.close()
+
+    return ip
 
 @app.route("/start")
 def start():
     pushmsg("Escape room started: " + game_instance.title)
+
+    game_data_store = {}
+    store("cscape-ip", __get_local_ip())
+    store("cscape-title", game_instance.title)
+    store("cscape-session-id", uuid.uuid4().hex)
+    store("cscape-start-timestamp", datetime.datetime.now().isoformat()) 
+    store("cscape-current-level", 0)
+
     return jsonify(ok=True, 
                    title=game_instance.title, 
                    check_interval_seconds=config["general"].getint("check_interval_seconds", 5))
+
+
+@app.route("/game_data_store", methods=["GET"])
+def get_game_data_store():
+    return jsonify(game_data_store)
+
+
+@app.route("/game_data_store", methods=["POST"])
+def set_game_data_store():
+    data = request.get_json()
+    if not data or not isinstance(data, dict):
+        return jsonify(error="Request body must be a JSON object with key-value pairs"), 400
+
+    for key, value in data.items():
+        store(key, value, source="endpoint")
+
+    return jsonify(ok=True, stored_data=data)
 
 # Serve static files
 @app.route('/<path:path>')

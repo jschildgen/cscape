@@ -19,6 +19,33 @@ const RevealCscape = (() => {
 		return slide.parentElement && slide.parentElement.closest('section');
 	}
 
+	function updateGameDataElements() {
+		const slides = deck.getSlides();
+		const currentIndex = deck.getState().indexh;
+		const currentSlide = slides[currentIndex];
+		currentSlide.querySelectorAll('[data-cscape-get]').forEach(element => {
+			const key = element.dataset.cscapeGet;
+			if (!key) return;
+
+			fetch(`http://localhost:5000/game_data_store/${encodeURIComponent(key)}`, { signal: AbortSignal.timeout(3000) })
+				.then(response => {
+					if (!response.ok) {
+						throw new Error(`HTTP ${response.status}`);
+					}
+					return response.json();
+				})
+				.then(data => {
+					if (data && data.value !== undefined) {
+						element.textContent = data.value;
+						console.info(`[CSCAPE] ${key}=${data.value}`)
+					}
+				})
+				.catch(error => {
+					console.error(`[CSCAPE] Error fetching game_data_store/${key}:`, error.message);
+				});
+		});
+	}
+
 	function checkAllVertical(slide, indexh) {
 		const slideId = slide.id || `slide-${deck.getSlides().indexOf(slide)}`;
 		const verticalSlides = slide.querySelectorAll('section');
@@ -143,10 +170,9 @@ const RevealCscape = (() => {
 							document.title = data.title + " - CScape";
 						}
 						checkInterval_seconds = data.check_interval_seconds || 5; // Use backend value or default to 5 seconds
+						updateGameDataElements(); // Initial load of game data elements
 						const slide = deck.getSlides()[0];
-						if (slide) {
-							slide.innerHTML = '';
-							
+						if (slide) {							
 							// Show a hint if not in fullscreen
 							const fsHint = document.createElement('div');
 							fsHint.textContent = 'Press F to go fullscreen';
@@ -179,16 +205,15 @@ const RevealCscape = (() => {
 						if (slide) {
 							slide.innerHTML = `<p style="color:red;font-size:0.5em;">
 								Backend not reachable at localhost:5000. Please start cscape.py.
-								<br>Fehlermeldung: ${error?.message || 'Unknown error'}
 							</p>`;
 						}
 					});
 			});
 
-
-
-			// Hide background video when it ends so the slide turns black
 			deck.on('slidechanged', () => {
+				updateGameDataElements();
+
+				// Hide background video when it ends so the slide turns black
 				// Add event listeners to all existing videos
 				document.querySelectorAll('.slide-background video').forEach(video => {
 					video.addEventListener('play', () => {
