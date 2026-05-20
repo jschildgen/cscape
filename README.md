@@ -178,9 +178,10 @@ Within the slides HTML, values for keys from the Game Data Store can be loaded:
 Hello <span data-cscape-get="name"></span>!
 ```
 
-Two endpoints can be used to store and get Game Data Store values via a GET/POST API:
+These endpoints can be used to store and get Game Data Store values via a GET/POST API:
 
 - `GET http://<ip>//game_data_store` (returns the full Game Data Store as JSON: `{"key1": "value1", ... }`)
+- `GET http://<ip>//game_data_store/key1` (return a single Game Data Store value: `"value1"`)
 - `POST http://<ip>//game_data_store` (accepts JSON data: `{"key1": "value1", ... }`)
 
 The following data is automatically stored in the Game Data Store by CSCape:

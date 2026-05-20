@@ -114,6 +114,11 @@ def start():
                    title=game_instance.title, 
                    check_interval_seconds=config["general"].getint("check_interval_seconds", 5))
 
+@app.route("/game_data_store/<path:key>", methods=["GET"])
+def get_game_data_store_key(key):
+    if key in game_data_store:
+        return jsonify(game_data_store[key])
+    return jsonify({"error": "Key not found"}), 404
 
 @app.route("/game_data_store", methods=["GET"])
 def get_game_data_store():

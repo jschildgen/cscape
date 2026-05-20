@@ -35,9 +35,9 @@ const RevealCscape = (() => {
 					return response.json();
 				})
 				.then(data => {
-					if (data && data.value !== undefined) {
-						element.textContent = data.value;
-						console.info(`[CSCAPE] ${key}=${data.value}`)
+					if (data) {
+						element.textContent = data;
+						console.info(`[CSCAPE] ${key}=${data}`)
 					}
 				})
 				.catch(error => {
