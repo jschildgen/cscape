@@ -101,6 +101,7 @@ def __get_local_ip():
 
 @app.route("/start")
 def start():
+    global game_data_store
     pushmsg("Escape room started: " + game_instance.title)
 
     game_data_store = {}
