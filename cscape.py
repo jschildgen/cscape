@@ -10,7 +10,7 @@ from flask_cors import CORS
 
 import webbrowser
 
-logging.basicConfig(level=logging.DEBUG, format="%(asctime)s %(levelname)s %(message)s")
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
 config = configparser.ConfigParser()
 config.read("config.ini")
@@ -69,7 +69,7 @@ def check(check):
         logging.debug("Check %s: param=%s solved=%s", check, param_value, result)
     else:
         logging.debug("Check %s: solved=%s", check, result)
-        
+
     if result != False:
         solved_task = check+"/"+result if isinstance(result, str) else check
 

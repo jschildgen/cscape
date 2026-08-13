@@ -19,15 +19,15 @@ const RevealCscape = (() => {
 		return slide.parentElement && slide.parentElement.closest('section');
 	}
 
-	function updateGameDataElements() {
-		const slides = deck.getSlides();
-		const currentIndex = deck.getState().indexh;
-		const currentSlide = slides[currentIndex];
-		currentSlide.querySelectorAll('[data-cscape-get]').forEach(element => {
+	function updateGameDataElements(slide) {
+		const targetSlide = slide || deck.getCurrentSlide();
+		if (!targetSlide) return Promise.resolve([]);
+		const promises = [];
+		targetSlide.querySelectorAll('[data-cscape-get]').forEach(element => {
 			const key = element.dataset.cscapeGet;
 			if (!key) return;
 
-			fetch(`http://localhost:5000/game_data_store/${encodeURIComponent(key)}`, { signal: AbortSignal.timeout(3000) })
+			const promise = fetch(`http://localhost:5000/game_data_store/${encodeURIComponent(key)}`, { signal: AbortSignal.timeout(3000) })
 				.then(response => {
 					if (!response.ok) {
 						throw new Error(`HTTP ${response.status}`);
@@ -36,14 +36,16 @@ const RevealCscape = (() => {
 				})
 				.then(data => {
 					if (data) {
-						element.textContent = data;
+						element.textContent = String(data);
 						console.info(`[CSCAPE] ${key}=${data}`)
 					}
 				})
 				.catch(error => {
 					console.error(`[CSCAPE] Error fetching game_data_store/${key}:`, error.message);
 				});
+			promises.push(promise);
 		});
+		return Promise.all(promises);
 	}
 
 	function checkAllVertical(slide, indexh) {
@@ -168,19 +170,20 @@ const RevealCscape = (() => {
 
 	return {
 		id: 'cscape',
+		updateGameDataElements: updateGameDataElements,
 		init: (reveal) => {
 			deck = reveal;
 
 			// Check if backend is running
-			deck.on('ready', () => {
+			deck.on('ready', async () => {
 				fetch('http://localhost:5000/start', { signal: AbortSignal.timeout(3000) })
 					.then(response => response.json())
-					.then(data => {
+					.then(async (data) => {
 						if (data.title) {
 							document.title = data.title + " - CScape";
 						}
 						checkInterval_seconds = data.check_interval_seconds || 5; // Use backend value or default to 5 seconds
-						updateGameDataElements(); // Initial load of game data elements
+						await updateGameDataElements(deck.getCurrentSlide()); // Initial load of game data elements
 						const slide = deck.getSlides()[0];
 						if (slide) {							
 							// Show a hint if not in fullscreen
@@ -220,8 +223,8 @@ const RevealCscape = (() => {
 					});
 			});
 
-			deck.on('slidechanged', () => {
-				updateGameDataElements();
+			deck.on('slidechanged', async (event) => {
+				await updateGameDataElements(event.currentSlide);
 
 				// Hide background video when it ends so the slide turns black
 				// Add event listeners to all existing videos
