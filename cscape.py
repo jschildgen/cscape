@@ -49,15 +49,27 @@ def check(check):
         return abort(404)
     
     parts_param = request.args.get('parts')
+    param_value = request.args.get('param')
+    
     if parts_param:
         parts = parts_param.split('|')
-        result = fn(parts)
+        if param_value:
+            result = fn(parts, param=param_value)
+        else:
+            result = fn(parts)
         if result == None: 
             result = False
     else:
-        result = fn()
+        if param_value:
+            result = fn(param=param_value)
+        else:
+            result = fn()
 
-    logging.debug("Check %s: solved=%s", check, result)
+    if param_value:
+        logging.debug("Check %s: param=%s solved=%s", check, param_value, result)
+    else:
+        logging.debug("Check %s: solved=%s", check, result)
+        
     if result != False:
         solved_task = check+"/"+result if isinstance(result, str) else check
 

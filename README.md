@@ -76,6 +76,22 @@ class Game:
 
 Each check method should start with `check_` and return `True` when the level is solved.
 
+### Check Params
+One check method can be reused for multiple tasks using parameters:
+
+```python
+def check_database(self, param):
+    # Return True when the level is solved
+    return something() >= int(param)
+```
+
+```html
+<section data-cscape-check="check_database" data-cscape-check-param="7"
+         data-background-video="videos/intro.mp4"
+         data-background-size="contain"
+         data-autoplay></section>
+```
+
 ### Actions
 
 Actions allow you to execute backend code when a level is solved. Use the `@action_for` decorator to register actions for one or more check methods. For example, the following action will run when `check_example()` returns `True`:

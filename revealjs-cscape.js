@@ -73,6 +73,10 @@ const RevealCscape = (() => {
 		console.debug("Checking parts: "+JSON.stringify(Array.from(not_yet_solved[slideId])));
 
 		const params = new URLSearchParams({ parts: Array.from(not_yet_solved[slideId]).join('|') });
+		const checkParam = slide.dataset.cscapeCheckParam;
+		if (checkParam) {
+			params.set('param', checkParam);
+		}
 
 		fetch(`http://localhost:5000/check/${checkName}?${params.toString()}`, { signal: AbortSignal.timeout(30000) })
 			.then(response => response.json())
@@ -99,7 +103,13 @@ const RevealCscape = (() => {
 		if (!checkName) return;
 
 		currently_checking = true;
-		fetch(`http://localhost:5000/check/${checkName}`, { signal: AbortSignal.timeout(30000) })
+		const params = new URLSearchParams();
+		const checkParam = nextSlide.dataset.cscapeCheckParam;
+		if (checkParam) {
+			params.set('param', checkParam);
+		}
+		const queryString = params.toString() ? `?${params.toString()}` : '';
+		fetch(`http://localhost:5000/check/${checkName}${queryString}`, { signal: AbortSignal.timeout(30000) })
 			.then(response => response.json())
 			.then(data => {
 				if (data.solved) {
