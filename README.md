@@ -8,7 +8,7 @@ CSCape turns a Raspberry Pi and a projector into a fully automated escape room f
 
 1. The presentation (`index.html`) is displayed on a projector via a browser
 2. The Flask backend (`cscape.py`) exposes check endpoints
-3. The reveal.js plugin (`revealjs-cscape.js`) polls the backend every 5 seconds
+3. The reveal.js plugin (`js/revealjs-cscape.js`) polls the backend every 5 seconds
 4. When a check returns `solved: true`, the presentation advances to the next slide
 5. The slide plays a video, then fades to black — waiting for the next challenge to be solved
 
@@ -26,8 +26,6 @@ Copy the example files and fill in your values:
 
 ```bash
 cp config.example.ini config.ini
-cp game.example.py game.py
-cp index.example.html index.html
 ```
 
 Add your video files to the `videos/` directory.
@@ -59,7 +57,7 @@ Each level is a `<section>` in `index.html`. Add a `data-cscape-check` attribute
          data-autoplay></section>
 ```
 
-Then implement the corresponding check in `game.py`:
+Then implement the corresponding check in your Game class in one of the game package directories (e.g., `cscape_spreadsheet/game.py`):
 
 ```python
 class Game:
@@ -179,7 +177,7 @@ The system polls the check method every 5 seconds and displays solved slides as 
 ## Game Data Store
 The Game Data Store is a key-value store where the game.py, the frontend HTML, and external services (via an API endpoint) can store and load player-specific data, e. g. player names or submission data.
 
-Store and get data values within a check method or an action in the `game.py`:
+Store and get data values within a check method or an action in your Game class:
 
 ```python
 def check_something(self):
@@ -221,10 +219,10 @@ This script starts the backend and opens Firefox with autoplay enabled. When you
 ## Manual Startup
 
 ```bash
-python game.py
+python cscape.py
 ```
 
-The `game.py` script instantiates the `Game` class and passes it to `cscape.run()`, which starts the Flask server on port 5000. 
+The `cscape.py` module loads the `Game` class from the package specified in `config.ini` (default: `cscape_spreadsheet`) and starts the Flask server on port 5000. 
 
 Then open `index.html` in a browser on the same machine. The backend runs on port 5000.
 
@@ -263,15 +261,16 @@ Alternatively, you can use the provided `run.sh` script, which starts Firefox in
 
 ## Project Structure
 
-| File | Purpose |
-|------|---------|
+| File/Dir | Purpose |
+|----------|---------|
 | `index.example.html` | Template for `index.html` |
 | `index.html` | Presentation with all slides/levels |
-| `cscape.py` | Flask backend that runs checks and sends Telegram notifications |
-| `game.py` | Your game logic — `Game` class with `__init__` and `check_*` methods; calls `cscape.run()` |
-| `game.example.py` | Template for `game.py` |
-| `config.ini` | Configuration (Telegram credentials and more) |
+| `cscape.py` | Flask backend that runs checks and sends Telegram notifications; also the main entry point |
+| `config.ini` | Configuration (Telegram credentials, game_module, etc.) |
 | `config.example.ini` | Template for `config.ini` |
-| `revealjs-cscape.js` | reveal.js plugin that polls the backend and controls slide progression |
-| `reveal.js/` | Vendored reveal.js framework |
+| `js/` | Common JavaScript assets |
+| `js/reveal.js/` | Vendored reveal.js framework |
+| `js/revealjs-cscape.js` | reveal.js plugin that polls the backend and controls slide progression |
+| `js/story-styles/` | Story styles extension |
 | `videos/` | Video files referenced by slides |
+| `cscape_*/` | Game packages (each contains `game.py`, `index.html`, and assets) |

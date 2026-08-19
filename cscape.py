@@ -1,6 +1,6 @@
 import configparser
 import logging
-
+import importlib
 import requests
 import socket
 import datetime
@@ -14,6 +14,9 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(mess
 
 config = configparser.ConfigParser()
 config.read("config.ini")
+
+GAME_MODULE_NAME = config.get('general', 'game_module')
+game_package_path = f"./{GAME_MODULE_NAME}"
 
 app = Flask(__name__)
 CORS(app)
@@ -149,14 +152,19 @@ def set_game_data_store():
 
     return jsonify(ok=True, stored_data=data)
 
-# Serve static files
+# Serve common JS assets from /js/ directory
+@app.route('/js/<path:path>')
+def serve_js(path):
+    return send_from_directory('./js', path)
+
+# Serve game-specific files
 @app.route('/<path:path>')
 def serve_static(path):
-    return send_from_directory('.', path)
+    return send_from_directory(game_package_path, path)
 
 @app.route('/')
 def index():
-    return send_from_directory('.', 'index.html')
+    return send_from_directory(game_package_path, 'index.html')
 
 def pushmsg(message):
     if not config.getboolean("telegram", "telegram_push"):
@@ -176,3 +184,8 @@ def run(game, open_browser=False, threaded=False):
         webbrowser.open(url)
 
     app.run(host="0.0.0.0", port=5000, threaded=threaded)
+
+# Start the game
+if __name__ == "__main__":
+    Game = importlib.import_module(GAME_MODULE_NAME).Game
+    run(Game())

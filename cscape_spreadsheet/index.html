@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>CSCape</title>
+
+		<link rel="stylesheet" href="js/reveal.js/dist/reset.css">
+		<link rel="stylesheet" href="js/reveal.js/dist/reveal.css">
+		<link rel="stylesheet" href="js/reveal.js/dist/theme/black.css">
+
+		<link rel="stylesheet" href="js/story-styles/cscape-story.css">
+
+		<!-- Theme used for syntax highlighted code -->
+		<link rel="stylesheet" href="js/reveal.js/plugin/highlight/monokai.css">
+
+		<style>
+			.slide-background {
+				background-color: #000 !important;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section data-layout="black"></section>
+				<section
+				 	data-cscape-check="check_cell_not_empty" data-cscape-check-param="D1"
+					data-layout="dialogue"
+					data-speaker="Luigi"
+					data-avatar="luigi_sad.jpg"
+					data-side="left"
+					data-generate-sound="true"
+					data-tts-text-from="dialogue">
+					<div class="cscape-dialogue">Oh no! <span data-cscape-get="D1"></span>! My delivery list is gone! I last saw it when I was checking the street map for the fastest delivery routes. Can you help me find it?</div>
+				</section>
+				<section
+				    data-cscape-check="check_cell_value" 
+					data-cscape-check-param="B4=4&B5=1&B6=2&B7=1&B8=1"
+					data-layout="dialogue"
+					data-speaker="Luigi"
+					data-avatar="luigi_happy.jpg"
+					data-side="left"
+					data-generate-sound="true"
+					data-tts-text-from="dialogue">
+					<div class="cscape-dialogue">Ah, perfetto! You found the missing order! Now, can you help me calculate the total for all Pizza Margherita? I need to know how much to charge the customer for their Pizza Margherita.</div>
+					<div class="cscape-task">A formula must begin with the <code>=</code> symbol, e.g., <code>=A1</code>. Within these formulas, you can use operators like <code>+</code>, <code>-</code>, <code>*</code>, and <code>/</code> and much more to execute mathematical calculations.</div>
+				</section>
+				<section
+					data-cscape-check="check_cell_value" data-cscape-check-param="D4=40"
+					data-layout="dialogue"
+					data-speaker="Luigi"
+					data-avatar="luigi.jpg"
+					data-side="left"
+					data-generate-sound="true"
+					data-tts-text-from="dialogue">
+					<div class="cscape-dialogue">The Pizza Margherita is correct now, but, <span data-cscape-get="D1"></span>, what's with the rest?</div>
+					<div class="cscape-task">Apply the formula you used for multiplying the amount and the pizza price to the rest of the cells by dragging down the small blue dot at the bottom-right corner.</div>
+				</section>
+
+				<section
+					data-cscape-check="check_cell_value" data-cscape-check-param="D4=40&D5=11.5&D6=25&D7=12.5&D8=15.8"
+					data-layout="dialogue"
+					data-speaker="Luigi"
+					data-avatar="luigi.jpg"
+					data-side="left"
+					data-generate-sound="true"
+					data-tts-text-from="dialogue">
+					<div class="cscape-dialogue">Fantastico! Now, can you use the SUM function to calculate the total amount for the entire order? I need to make sure everything adds up correctly.</div>
+					<div class="cscape-task">Instead of tediously adding individual values with <code>=A1+A2+A3+...A100</code>, you can use <code>=SUM(A1:A100)</code> to efficiently calculate the sum of an entire range of cells.</div>
+				</section>
+
+				<section
+					data-cscape-check="check_cell_value" data-cscape-check-param="D9=104.8"
+					data-layout="dialogue"
+					data-speaker="Luigi"
+					data-avatar="luigi_happy.jpg"
+					data-side="left"
+					data-generate-sound="true"
+					data-tts-text-from="dialogue">
+					<div class="cscape-dialogue">Thank you very much, <span data-cscape-get="D1"></span>! You saved my pizza order and my business! The total is correct, and the customer will be happy. Come back anytime for a pizza! Everything is complete! You won!</div>
+				</section>
+			</div>
+		</div>
+
+		<script src="js/reveal.js/dist/reveal.js"></script>
+		<script src="js/reveal.js/plugin/notes/notes.js"></script>
+		<script src="js/reveal.js/plugin/markdown/markdown.js"></script>
+		<script src="js/reveal.js/plugin/highlight/highlight.js"></script>
+		<script src="js/revealjs-cscape.js"></script>
+		<script src="js/story-styles/cscape-story.js"></script>
+		<script>
+			// More info about initialization & config:
+			// - https://revealjs.com/initialization/
+			// - https://revealjs.com/config/
+			Reveal.initialize({
+				hash: false,
+				controls: false,
+				progress: false,
+				transition: 'none',
+				keyboard: {
+					27: function () { alert("Close with Ctrl+W"); },  // Esc 
+					83: null 							 // disable 'S' key (speaker mode)
+				},
+
+				// Learn about plugins: https://revealjs.com/plugins/
+				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealCscape, CscapeStory ],
+
+				cscape_story: {
+					blockNavigationUntilReady: true,
+
+					defaultLayout: "dialogue",
+					defaultBackground: "pizzaria.jpg",
+					defaultTextMode: "type",
+					typeSpeed: 24,
+					soundVolume: 0.82,
+					audioHintText: "Click to enable voice output",
+
+					defaultVoice: "Google UK English Male",
+					defaultTtsLang: "en-UK",
+					defaultTtsRate: 1.0,
+					defaultTtsPitch: 1.0
+				}
+			});
+		</script>
+	</body>
+</html>
+

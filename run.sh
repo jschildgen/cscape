@@ -6,7 +6,7 @@ cd "$(dirname "$0")"
 source .venv/bin/activate
 
 # Start the backend in the background and capture its PID
-python game.py "$@" &
+python cscape.py "$@" &
 BACKEND_PID=$!
 
 echo "Waiting for backend..."
