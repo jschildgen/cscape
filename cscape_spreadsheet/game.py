@@ -2,13 +2,13 @@ import requests
 import configparser
 import csv
 import re
-import cscape
 
 class Game:
     title = "Spreadsheet Escape Room"
     sheet_csv_url : str
 
-    def __init__(self):
+    def __init__(self, game_data_store):
+        self.game_data_store = game_data_store
         config = configparser.ConfigParser()
         config.read("config.ini")
         SHEET_URL = config.get("google_spreadsheet","sheet_url")
@@ -46,7 +46,7 @@ class Game:
             if cell_value == "":
                 return False
             else:
-                cscape.store(cell, cell_value)
+                self.game_data_store.store(cell, cell_value, source="check_cell_not_empty")
         return True
 
     def check_cell_value(self, param):
@@ -61,7 +61,7 @@ class Game:
         for cell_ref in param.split("&"):
             cell, expected_value = cell_ref.split("=")
             cell_value = self.cell_value(cell)
-            cscape.store(cell, cell_value)
+            self.game_data_store.store(cell, cell_value, source="check_cell_value")
             
             # If expected_value can be cast to float, do numeric comparison
             try:
@@ -79,7 +79,3 @@ class Game:
                 if cell_value != expected_value:
                     return False
         return True
-
-
-if __name__ == "__main__":
-    cscape.run(Game())

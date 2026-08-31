@@ -7,7 +7,6 @@ import datetime
 import uuid
 from flask import Flask, jsonify, abort, send_from_directory, request
 from flask_cors import CORS
-
 import webbrowser
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
@@ -23,12 +22,70 @@ CORS(app)
 
 game_instance = None
 
-game_data_store = {}
-
 solved_levels = set()
 
 # Action registry to map check functions to their action functions
 _action_registry = {}
+
+
+class GameDataStore:
+    def __init__(self):
+        self._store = {}
+
+    def get(self, key, default=None):
+        return self._store.get(key, default)
+
+    def store(self, key, value, source=None, push=False):
+        self._store[key] = value
+        message = f"{key}={value}" + ("" if source is None else " (via "+source+")")
+        logging.info(message)
+        if push:
+            pushmsg(message)
+
+    def clear(self):
+        self._store = {}
+
+    def __contains__(self, key):
+        return key in self._store
+
+    def __getitem__(self, key):
+        return self._store[key]
+
+    def __setitem__(self, key, value):
+        self._store[key] = value
+
+    def __delitem__(self, key):
+        del self._store[key]
+
+    def __iter__(self):
+        return iter(self._store)
+
+    def __len__(self):
+        return len(self._store)
+
+    def items(self):
+        return self._store.items()
+
+    def keys(self):
+        return self._store.keys()
+
+    def values(self):
+        return self._store.values()
+
+    def update(self, other=None, **kwargs):
+        if other is not None:
+            if hasattr(other, 'items'):
+                for key, value in other.items():
+                    self._store[key] = value
+            else:
+                for key, value in other:
+                    self._store[key] = value
+        for key, value in kwargs.items():
+            self._store[key] = value
+
+
+game_data_store = GameDataStore()
+
 
 def action_for(check_function_name):
     """Decorator to register an action function for one or more check functions.
@@ -77,7 +134,7 @@ def check(check):
         solved_task = check+"/"+result if isinstance(result, str) else check
 
         solved_levels.add(solved_task)
-        store("cscape-current-level", len(solved_levels))
+        game_data_store.store("cscape-current-level", len(solved_levels))
         pushmsg(f"{game_instance.title} - Level {len(solved_levels)} solved: {solved_task}")
 
         # Check if an action is registered for this check
@@ -90,18 +147,6 @@ def check(check):
                 logging.error("Error in action for check %s: %s", solved_task, e)
 
     return jsonify(solved=result)
-
-# Game Data Store
-
-def get(key):
-    return game_data_store.get(key, None)
-
-def store(key, value, source=None, push=False):
-    game_data_store[key] = value
-    message = f"{key}={value}" + ("" if source is None else " (via "+source+")")
-    logging.info(message)
-    if push:
-        pushmsg(message)
 
 def __get_local_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -119,12 +164,12 @@ def start():
     global game_data_store
     pushmsg("Escape room started: " + game_instance.title)
 
-    game_data_store = {}
-    store("cscape-ip", __get_local_ip())
-    store("cscape-title", game_instance.title)
-    store("cscape-session-id", uuid.uuid4().hex)
-    store("cscape-start-timestamp", datetime.datetime.now().isoformat()) 
-    store("cscape-current-level", 0)
+    game_data_store.clear()
+    game_data_store.store("cscape-ip", __get_local_ip())
+    game_data_store.store("cscape-title", game_instance.title)
+    game_data_store.store("cscape-session-id", uuid.uuid4().hex)
+    game_data_store.store("cscape-start-timestamp", datetime.datetime.now().isoformat()) 
+    game_data_store.store("cscape-current-level", 0)
 
     return jsonify(ok=True, 
                    title=game_instance.title, 
@@ -138,7 +183,7 @@ def get_game_data_store_key(key):
 
 @app.route("/game_data_store", methods=["GET"])
 def get_game_data_store():
-    return jsonify(game_data_store)
+    return jsonify(dict(game_data_store.items()))
 
 
 @app.route("/game_data_store", methods=["POST"])
@@ -148,7 +193,7 @@ def set_game_data_store():
         return jsonify(error="Request body must be a JSON object with key-value pairs"), 400
 
     for key, value in data.items():
-        store(key, value, source="endpoint")
+        game_data_store.store(key, value, source="endpoint")
 
     return jsonify(ok=True, stored_data=data)
 
@@ -188,4 +233,4 @@ def run(game, open_browser=False, threaded=False):
 # Start the game
 if __name__ == "__main__":
     Game = importlib.import_module(GAME_MODULE_NAME).Game
-    run(Game())
+    run(Game(game_data_store))

@@ -63,9 +63,9 @@ Then implement the corresponding check in your Game class in one of the game pac
 class Game:
     title = "My Escape Room"
 
-    def __init__(self):
+    def __init__(self, game_data_store):
         # Prepare the environment when the server starts
-        pass
+        self.game_data_store = game_data_store
 
     def check_database(self):
         # Return True when the level is solved
@@ -78,9 +78,13 @@ Each check method should start with `check_` and return `True` when the level is
 One check method can be reused for multiple tasks using parameters:
 
 ```python
-def check_database(self, param):
-    # Return True when the level is solved
-    return something() >= int(param)
+class Game:
+    def __init__(self, game_data_store):
+        self.game_data_store = game_data_store
+
+    def check_database(self, param):
+        # Return True when the level is solved
+        return something() >= int(param)
 ```
 
 ```html
@@ -96,6 +100,9 @@ Actions allow you to execute backend code when a level is solved. Use the `@acti
 
 ```python
 class Game:
+    def __init__(self, game_data_store):
+        self.game_data_store = game_data_store
+
     def check_example(self):
         ...
 
@@ -158,8 +165,12 @@ You can create parallel challenges using reveal.js's vertical slides. When a hor
 In the Python code, check methods for parallel checks have an additional parameter `parts`, a list of parts (in this example: `['file1', 'file2', 'file3']`) which are not solved yet.
 
 ```python
-def check_files(self, parts):
-    return None   # or one element of parts that was solved
+class Game:
+    def __init__(self, game_data_store):
+        self.game_data_store = game_data_store
+
+    def check_files(self, parts):
+        return None   # or one element of parts that was solved
 ```
 
 Instead of returning True or False, parallel checks return the name of the part when it was solved. When none of the parts were solved, it returns None.
@@ -180,10 +191,14 @@ The Game Data Store is a key-value store where the game.py, the frontend HTML, a
 Store and get data values within a check method or an action in your Game class:
 
 ```python
-def check_something(self):
-    # ...
-    cscape.store("name", name)
-    return cscape.get("solution") == "something"
+class Game:
+    def __init__(self, game_data_store):
+        self.game_data_store = game_data_store
+
+    def check_something(self):
+        # ...
+        self.game_data_store.store("name", name)
+        return self.game_data_store.get("solution") == "something"
 ```
 
 Within the slides HTML, values for keys from the Game Data Store can be loaded:

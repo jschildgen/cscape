@@ -3,8 +3,9 @@ import cscape
 class Game:
     title = "Example Escape Room"
 
-    def __init__(self):
+    def __init__(self, game_data_store):
         """Called once when the game starts. Use this to prepare the environment."""
+        self.game_data_store = game_data_store
         pass
 
     # Add your check methods below. Each method should start with "check_" and
@@ -31,7 +32,3 @@ class Game:
     def check_parallel(self, parts):
         return None
 
-
-# Start the game
-if __name__ == "__main__":
-    cscape.run(Game())
