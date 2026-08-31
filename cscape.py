@@ -24,9 +24,6 @@ game_instance = None
 
 solved_levels = set()
 
-# Action registry to map check functions to their action functions
-_action_registry = {}
-
 
 class GameDataStore:
     def __init__(self):
@@ -87,20 +84,6 @@ class GameDataStore:
 game_data_store = GameDataStore()
 
 
-def action_for(check_function_name):
-    """Decorator to register an action function for one or more check functions.
-    `check_function_name` can be a single name or a comma-separated list.
-    """
-    names = [n.strip() for n in str(check_function_name).split(",") if n.strip()]
-
-    def decorator(action_function):
-        for name in names:
-            _action_registry[name] = action_function
-            logging.debug(f"Registered action for {name}: {action_function.__name__}")
-        return action_function
-
-    return decorator
-
 @app.route("/check/<check>")
 def check(check):
     fn = getattr(game_instance, check, None)
@@ -110,6 +93,7 @@ def check(check):
     
     parts_param = request.args.get('parts')
     param_value = request.args.get('param')
+    action_name = request.args.get('action')
     
     if parts_param:
         parts = parts_param.split('|')
@@ -137,14 +121,15 @@ def check(check):
         game_data_store.store("cscape-current-level", len(solved_levels))
         pushmsg(f"{game_instance.title} - Level {len(solved_levels)} solved: {solved_task}")
 
-        # Check if an action is registered for this check
-        action_fn = _action_registry.get(solved_task)
-        if action_fn:
-            logging.debug(f"Calling action for {solved_task}")
-            try:
-                action_fn(game_instance)
-            except Exception as e:
-                logging.error("Error in action for check %s: %s", solved_task, e)
+        # Call action method if specified via data-cscape-action attribute
+        if action_name:
+            action_fn = getattr(game_instance, action_name, None)
+            if action_fn and callable(action_fn):
+                logging.debug(f"Calling action {action_name} for {solved_task}")
+                try:
+                    action_fn()
+                except Exception as e:
+                    logging.error("Error in action %s for check %s: %s", action_name, solved_task, e)
 
     return jsonify(solved=result)
 

@@ -96,7 +96,16 @@ class Game:
 
 ### Actions
 
-Actions allow you to execute backend code when a level is solved. Use the `@action_for` decorator to register actions for one or more check methods. For example, the following action will run when `check_example()` returns `True`:
+Actions allow you to execute backend code when a level is solved. Use the `data-cscape-action` attribute in your `index.html` to specify which method in your `Game` class should be called when a check passes. For example:
+
+```html
+<section data-cscape-check="check_example" data-cscape-action="example_action"
+         data-background-video="videos/intro.mp4"
+         data-background-size="contain"
+         data-autoplay></section>
+```
+
+Then implement the action method in your Game class:
 
 ```python
 class Game:
@@ -104,33 +113,25 @@ class Game:
         self.game_data_store = game_data_store
 
     def check_example(self):
-        ...
+        # Return True when the level is solved
+        return True
 
-    @cscape.action_for("check_example")
     def example_action(self):
         # Runs when check_example returns True
+        # Use this for side effects like sending notifications, updating databases,
+        # controlling external devices, or triggering physical effects in your
+        # escape room (e.g., turning on the light via remote control)
         ...
 ```
 
-You can reuse a single action for multiple checks by passing a comma-separated list of check method names:
+You can reuse a single action method for multiple checks by specifying the same action name in multiple slides:
 
-```python
-@cscape.action_for("check_example1, check_example2")
-def example_action(self):
-    # Runs when either check_example1 or check_example2 returns True
-    ...
+```html
+<section data-cscape-check="check_example1" data-cscape-action="shared_action">...</section>
+<section data-cscape-check="check_example2" data-cscape-action="shared_action">...</section>
 ```
 
-When an action should be for a part of a parallel check (see next section), use this syntax:
-
-```python
-@cscape.action_for("check_parallel/b")
-def example_action(self):
-    # Runs when part b of check_parallel is solved (this is when check_parallel returns 'b')
-    ...
-```
-
-Use actions for side effects like sending notifications, updating databases, controlling external devices, or triggering physical effects in your escape room (e.g., turning on the light via remote control).
+For parallel checks (see next section), you can specify an action for the parent slide that will be called when any part is solved, or for individual parts by adding the action to specific vertical slides.
 
 ### Parallel Checks with Vertical Slides
 

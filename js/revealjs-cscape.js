@@ -79,6 +79,10 @@ const RevealCscape = (() => {
 		if (checkParam) {
 			params.set('param', checkParam);
 		}
+		const actionName = slide.dataset.cscapeAction;
+		if (actionName) {
+			params.set('action', actionName);
+		}
 
 		fetch(`http://localhost:5000/check/${checkName}?${params.toString()}`, { signal: AbortSignal.timeout(30000) })
 			.then(response => response.json())
@@ -109,6 +113,10 @@ const RevealCscape = (() => {
 		const checkParam = nextSlide.dataset.cscapeCheckParam;
 		if (checkParam) {
 			params.set('param', checkParam);
+		}
+		const actionName = nextSlide.dataset.cscapeAction;
+		if (actionName) {
+			params.set('action', actionName);
 		}
 		const queryString = params.toString() ? `?${params.toString()}` : '';
 		fetch(`http://localhost:5000/check/${checkName}${queryString}`, { signal: AbortSignal.timeout(30000) })

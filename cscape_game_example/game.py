@@ -1,5 +1,3 @@
-import cscape
-
 class Game:
     title = "Example Escape Room"
 
@@ -16,13 +14,10 @@ class Game:
         return False
     
     # If you want to trigger some side effect when a level is solved, define a method
-    # and annotate it with @cscape.action_for, referencing the check method. 
-    # For example, the following method will be called when check_example() returns True.
-    # You can reuse a single action for multiple checks by passing a comma-separated list 
-    # of check method names, for example: @cscape.action_for("check_example1, check_example2"])
-    # Actions for parts of parallel checks: @cscape.action_for("check_parallel/b")
-
-    @cscape.action_for("check_example")
+    # and reference it in index.html via the data-cscape-action attribute.
+    # For example: <section data-cscape-check="check_example" data-cscape-action="example_solved">
+    # You can reuse a single action for multiple checks by specifying the same action name
+    # in multiple slides.
     def example_solved(self):
         pass
 
@@ -31,4 +26,3 @@ class Game:
     # Return None if none of them is solved.
     def check_parallel(self, parts):
         return None
-
