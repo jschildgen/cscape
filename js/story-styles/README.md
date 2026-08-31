@@ -1,6 +1,6 @@
 # CScape Story Styles
 
-`story-styles` is an extension for CScape projects that displays Reveal/CScape slides as a dialogue-driven story, visual novel, or text adventure.
+`js/story-styles` is an extension for CScape projects that displays Reveal/CScape slides as a dialogue-driven story, visual novel, or text adventure.
 
 The extension includes, among other things:
 
@@ -18,11 +18,11 @@ The extension includes, among other things:
 ## Repository Structure
 
 ```text
-story-styles/
+js/story-styles/
 ├── README.md
-└── story-styles/
-    ├── cscape-story.css
-    └── cscape-story.js
+├── cscape-story.css
+├── cscape-story.js
+└── img/
 ```
 
 ---
@@ -31,15 +31,9 @@ story-styles/
 
 A typical CScape project already contains an `index.html`, `reveal.js`, and other template files.
 
-Copy the following items from this repository:
+The `js/story-styles` directory is already part of this CScape repository.
 
-```text
-story-styles/
-```
-
-into your CScape project directory.
-
-The resulting project structure could look like this:
+The project structure looks like this:
 
 ```text
 my-cscape/
@@ -47,9 +41,11 @@ my-cscape/
 ├── game.py
 ├── revealjs-cscape.js
 ├── reveal.js/
-├── story-styles/
-│   ├── cscape-story.css
-│   └── cscape-story.js
+├── js/
+│   └── story-styles/
+│       ├── cscape-story.css
+│       ├── cscape-story.js
+│       └── README.md
 ├── ...
 ```
 
@@ -66,7 +62,7 @@ Add the Story Styles stylesheet in the `<head>` after the Reveal styles:
 <link rel="stylesheet" href="reveal.js/dist/reveal.css">
 <link rel="stylesheet" href="reveal.js/dist/theme/black.css">
 
-<link rel="stylesheet" href="story-styles/cscape-story.css">
+<link rel="stylesheet" href="js/story-styles/cscape-story.css">
 ```
 
 ## Importing the JavaScript
@@ -76,7 +72,7 @@ Cscape Story is a Reveal.js plugin. Include the script and register it in `Revea
 ```html
 <script src="reveal.js/dist/reveal.js"></script>
 <script src="revealjs-cscape.js"></script>
-<script src="story-styles/cscape-story.js"></script>
+<script src="js/story-styles/cscape-story.js"></script>
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -119,7 +115,7 @@ Cscape Story is a Reveal.js plugin. Include the script and register it in `Revea
     <link rel="stylesheet" href="reveal.js/dist/reset.css">
     <link rel="stylesheet" href="reveal.js/dist/reveal.css">
     <link rel="stylesheet" href="reveal.js/dist/theme/black.css">
-    <link rel="stylesheet" href="story-styles/cscape-story.css">
+    <link rel="stylesheet" href="js/story-styles/cscape-story.css">
 </head>
 
 <body>
@@ -149,7 +145,7 @@ Cscape Story is a Reveal.js plugin. Include the script and register it in `Revea
 
 <script src="reveal.js/dist/reveal.js"></script>
 <script src="revealjs-cscape.js"></script>
-<script src="story-styles/cscape-story.js"></script>
+<script src="js/story-styles/cscape-story.js"></script>
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -233,7 +229,7 @@ Classic visual-novel layout:
 - dialogue box at the bottom
 - task displayed inside the dialogue box
 
-![Dialogue example](demo/textadventure.png)
+![Dialogue example](img/textadventure.png)
 
 ```html
 <section 
@@ -250,7 +246,7 @@ Classic visual-novel layout:
 
 Large cut-out character without a dialogue box, the appearance is more video-like. The task is displayed separately at the bottom.
 
-![Dialogue example](demo/videodemo.png)
+![Dialogue example](img/videodemo.png)
 
 ```html
 <section data-layout="video"
@@ -268,7 +264,7 @@ Transparent PNG files are particularly suitable for this layout.
 
 A large character like in the video layout, combined with a dialogue box.
 
-![Dialogue example](demo/hybriddemo.png)
+![Dialogue example](img/hybriddemo.png)
 
 ```html
 <section data-layout="hybrid"
@@ -307,7 +303,7 @@ Simple black background without any story elements (speaker, dialogue box, task 
 
 By default, text is displayed one character at a time:
 
-![Typewriter animation demo](demo/ezgif-28add91732611d29.gif)
+![Typewriter animation demo](img/ezgif-28add91732611d29.gif)
 
 ```html
 <section data-text-mode="type">
@@ -590,7 +586,7 @@ Reveal.initialize({
 });
 ```
 
-![Dialogue example](demo/click-hint.png)
+![Dialogue example](img/click-hint.png)
 
 ---
 
@@ -854,7 +850,7 @@ window.CSCAPE_STORY_API.stopAllPersistentLoops();
     <link rel="stylesheet" href="reveal.js/dist/reset.css">
     <link rel="stylesheet" href="reveal.js/dist/reveal.css">
     <link rel="stylesheet" href="reveal.js/dist/theme/black.css">
-    <link rel="stylesheet" href="story-styles/cscape-story.css">
+    <link rel="stylesheet" href="js/story-styles/cscape-story.css">
 
     <style>
         body.theme-custom {
@@ -887,7 +883,7 @@ window.CSCAPE_STORY_API.stopAllPersistentLoops();
 
 <script src="reveal.js/dist/reveal.js"></script>
 <script src="revealjs-cscape.js"></script>
-<script src="story-styles/cscape-story.js"></script>
+<script src="js/story-styles/cscape-story.js"></script>
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
