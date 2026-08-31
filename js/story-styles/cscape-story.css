@@ -1,0 +1,464 @@
+:root {
+    --page-bg: #000;
+    --font-main: system-ui, sans-serif;
+    --font-display: var(--font-main);
+
+    --scene-bg-url: none;
+    --scene-overlay: linear-gradient(rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.35));
+    --scene-vignette: radial-gradient(circle at center, transparent 46%, rgba(0, 0, 0, 0.48) 100%);
+    --scene-scanlines: none;
+    --scene-scanlines-opacity: 0;
+
+    --speaker-x: 3vw;
+    --speaker-bottom: 24vh;
+    --speaker-width: min(24vw, 320px);
+    --speaker-bg: rgba(0, 0, 0, 0.55);
+    --speaker-border: rgba(255, 255, 255, 0.35);
+    --speaker-border-right: var(--speaker-border);
+    --speaker-radius: 18px;
+    --speaker-shadow: 0 18px 50px rgba(0, 0, 0, 0.55);
+
+    --dialogue-left: 3vw;
+    --dialogue-right: 3vw;
+    --dialogue-bottom: 3vh;
+    --dialogue-min-height: 17vh;
+    --dialogue-max-height: 34vh;
+    --dialogue-bg: rgba(0, 0, 0, 0.88);
+    --dialogue-border: rgba(255, 255, 255, 0.35);
+    --dialogue-radius: 18px;
+    --dialogue-shadow: 0 16px 48px rgba(0, 0, 0, 0.38);
+
+    --name-color: #ff9b64;
+    --text-color: #f3f3f3;
+    --objective-color: #fff;
+    --task-bg: rgba(255, 255, 255, 0.12);
+    --task-border: rgba(255, 255, 255, 0.32);
+    --task-color: var(--text-color);
+
+    --name-size: clamp(0.68rem, 1vw, 0.96rem);
+    --text-size: clamp(0.9rem, 1.35vw, 1.28rem);
+    --task-size: clamp(0.72rem, 1vw, 0.98rem);
+
+    --video-character-width: min(42vw, 620px);
+    --video-character-height: 92vh;
+    --video-character-bottom: 0;
+    --video-character-side-offset: 5vw;
+    --video-task-width: min(74vw, 980px);
+    --video-task-bottom: 4vh;
+
+    --hybrid-character-width: min(35vw, 520px);
+    --hybrid-character-height: 88vh;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    background: var(--page-bg);
+    font-family: var(--font-main);
+}
+
+.reveal {
+    visibility: visible;
+    background: var(--page-bg);
+}
+
+.reveal,
+.reveal .slides,
+.reveal section {
+    width: 100% !important;
+    height: 100% !important;
+    inset: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: none !important;
+    text-align: left;
+}
+
+.reveal section {
+    overflow: hidden;
+}
+
+.scene {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background-color: var(--page-bg);
+    background-image: var(--scene-overlay), var(--scene-bg-url);
+    background-position: center center;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.scene::before,
+.scene::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.scene::before {
+    z-index: 2;
+    background: var(--scene-scanlines);
+    opacity: var(--scene-scanlines-opacity);
+    mix-blend-mode: screen;
+}
+
+.scene::after {
+    z-index: 3;
+    background: var(--scene-vignette);
+}
+
+.speaker {
+    position: absolute;
+    z-index: 4;
+    left: var(--speaker-x);
+    right: auto;
+    bottom: var(--speaker-bottom);
+    width: var(--speaker-width);
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    background: var(--speaker-bg);
+    border: 3px solid var(--speaker-border);
+    border-radius: var(--speaker-radius);
+    box-shadow: var(--speaker-shadow);
+    opacity: 0;
+    transform: translateX(-120%);
+}
+
+.speaker.right,
+.speaker.from-right {
+    left: auto;
+    right: var(--speaker-x);
+    border-color: var(--speaker-border-right);
+    transform: translateX(120%);
+}
+
+.speaker.is-empty {
+    display: none !important;
+}
+
+.speaker.from-left {
+    animation: storySlideInLeft 520ms cubic-bezier(.16, .92, .32, 1.08) forwards;
+}
+
+.speaker.from-right {
+    animation: storySlideInRight 520ms cubic-bezier(.16, .92, .32, 1.08) forwards;
+}
+
+@keyframes storySlideInLeft {
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes storySlideInRight {
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.reveal .speaker img,
+.speaker img {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    max-height: none !important;
+    margin: 0 !important;
+    object-fit: cover;
+    object-position: center center;
+}
+
+.dialogue {
+    position: absolute;
+    z-index: 5;
+    left: var(--dialogue-left);
+    right: var(--dialogue-right);
+    bottom: var(--dialogue-bottom);
+    min-height: var(--dialogue-min-height);
+    max-height: var(--dialogue-max-height);
+    box-sizing: border-box;
+    overflow: hidden;
+    padding: 1rem 1.2rem;
+    color: var(--text-color);
+    background: var(--dialogue-bg);
+    border: 3px solid var(--dialogue-border);
+    border-radius: var(--dialogue-radius);
+    box-shadow: var(--dialogue-shadow);
+}
+
+.dialogue.is-empty {
+    display: none !important;
+}
+
+.name {
+    position: relative;
+    z-index: 1;
+    margin-bottom: 0.45rem;
+    color: var(--name-color);
+    font-family: var(--font-display);
+    font-size: var(--name-size);
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.name.is-empty {
+    display: none !important;
+}
+
+.text {
+    position: relative;
+    z-index: 1;
+    color: var(--text-color);
+    font-family: var(--font-display);
+    font-size: var(--text-size);
+    line-height: 1.45;
+    white-space: normal;
+}
+
+.text.is-empty {
+    display: none !important;
+}
+
+.objective {
+    color: var(--objective-color);
+    font-weight: 900;
+}
+
+.task,
+.video-task {
+    box-sizing: border-box;
+    color: var(--task-color);
+    background: var(--task-bg);
+    border: 2px solid var(--task-border);
+    border-radius: 12px;
+    font-family: var(--font-main);
+    font-size: var(--task-size);
+    line-height: 1.35;
+}
+
+.task {
+    margin-top: 0.75rem;
+    padding: 0.58rem 0.78rem;
+}
+
+.task.is-empty,
+.video-task.is-empty {
+    display: none !important;
+}
+
+.video-task {
+    display: none;
+}
+
+.cursor {
+    display: inline-block;
+    margin-left: 0.05em;
+    animation: storyBlink 1s steps(1) infinite;
+}
+
+@keyframes storyBlink {
+    50% {
+        opacity: 0;
+    }
+}
+
+.audio-hint {
+    position: fixed;
+    z-index: 9999;
+    top: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0.68rem 1rem;
+    color: var(--text-color);
+    background: rgba(0, 0, 0, 0.84);
+    border: 2px solid var(--dialogue-border);
+    border-radius: 999px;
+    box-shadow: 0 0 24px rgba(0, 0, 0, 0.5);
+    font-family: var(--font-main);
+    font-size: 0.8rem;
+    font-weight: 850;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+}
+
+.audio-hint:focus-visible {
+    outline: 3px solid var(--name-color);
+    outline-offset: 3px;
+}
+
+/* Layout: dialogue */
+.reveal section[data-layout="dialogue"] .video-task {
+    display: none !important;
+}
+
+/* Layout: video */
+.reveal section[data-layout="video"] .dialogue {
+    display: none !important;
+}
+
+.reveal section[data-layout="video"] .speaker {
+    left: var(--video-character-side-offset);
+    right: auto;
+    bottom: var(--video-character-bottom);
+    width: var(--video-character-width);
+    height: var(--video-character-height);
+    aspect-ratio: auto;
+    overflow: visible;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.reveal section[data-layout="video"] .speaker.right,
+.reveal section[data-layout="video"] .speaker.from-right {
+    left: auto;
+    right: var(--video-character-side-offset);
+}
+
+.reveal section[data-layout="video"] .speaker img {
+    object-fit: contain;
+    object-position: bottom center;
+}
+
+.reveal section[data-layout="video"] .video-task {
+    display: block;
+    position: absolute;
+    z-index: 6;
+    left: 50%;
+    bottom: var(--video-task-bottom);
+    width: var(--video-task-width);
+    padding: 0.9rem 1.1rem;
+    text-align: center;
+    transform: translateX(-50%);
+    box-shadow: var(--dialogue-shadow);
+}
+
+/* Layout: hybrid */
+.reveal section[data-layout="hybrid"] {
+    --hybrid-dialogue-gap: 2vw;
+}
+
+.reveal section[data-layout="hybrid"] .speaker {
+    bottom: var(--video-character-bottom);
+    width: var(--hybrid-character-width);
+    height: var(--hybrid-character-height);
+    aspect-ratio: auto;
+    overflow: visible;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.reveal section[data-layout="hybrid"] .speaker img {
+    object-fit: contain;
+    object-position: bottom center;
+}
+
+/*
+ * Figur links:
+ * Links wird Platz für die Figur freigehalten.
+ */
+.reveal section[data-layout="hybrid"][data-side="left"] .dialogue {
+    left: calc(
+        var(--speaker-x)
+        + var(--hybrid-character-width)
+        + var(--hybrid-dialogue-gap)
+    );
+    right: var(--dialogue-right);
+}
+
+/*
+ * Figur rechts:
+ * Rechts wird Platz für die Figur freigehalten.
+ */
+.reveal section[data-layout="hybrid"][data-side="right"] .dialogue {
+    left: var(--dialogue-left);
+    right: calc(
+        var(--speaker-x)
+        + var(--hybrid-character-width)
+        + var(--hybrid-dialogue-gap)
+    );
+}
+
+/*
+ * Fallback, falls data-side fehlt:
+ * Standardmäßig wird von einer linken Figur ausgegangen.
+ */
+.reveal section[data-layout="hybrid"]:not([data-side]) .dialogue {
+    left: calc(
+        var(--speaker-x)
+        + var(--hybrid-character-width)
+        + var(--hybrid-dialogue-gap)
+    );
+    right: var(--dialogue-right);
+}
+
+.reveal section[data-layout="hybrid"] .video-task {
+    display: none !important;
+}
+
+/* Layout: none */
+.reveal section[data-layout="none"] .speaker,
+.reveal section[data-layout="none"] .dialogue,
+.reveal section[data-layout="none"] .video-task {
+    display: none !important;
+}
+
+@media (max-width: 800px) {
+    :root {
+        --speaker-width: min(36vw, 220px);
+        --speaker-bottom: 25vh;
+        --dialogue-left: 4vw;
+        --dialogue-right: 4vw;
+        --dialogue-bottom: 3vh;
+        --dialogue-max-height: 42vh;
+        --video-character-width: min(60vw, 420px);
+        --video-task-width: 88vw;
+    }
+
+    .dialogue {
+        padding: 0.8rem 0.95rem;
+    }
+}
+@media (max-width: 900px) {
+    .reveal section[data-layout="hybrid"] .speaker {
+        bottom: 24vh;
+        width: min(48vw, 340px);
+        height: 68vh;
+    }
+
+    .reveal section[data-layout="hybrid"][data-side="left"] .dialogue,
+    .reveal section[data-layout="hybrid"][data-side="right"] .dialogue,
+    .reveal section[data-layout="hybrid"]:not([data-side]) .dialogue {
+        left: var(--dialogue-left);
+        right: var(--dialogue-right);
+    }
+}
+/* Hide cscape-dialogue and cscape-task elements - they are data sources only */
+.cscape-dialogue,
+.cscape-task {
+    display: none !important;
+}
+/* Layout: black */
+.reveal section[data-layout="black"] {
+    background-color: #000 !important;
+}
+.reveal section[data-layout="black"] .scene,
+.reveal section[data-layout="black"] .speaker,
+.reveal section[data-layout="black"] .dialogue,
+.reveal section[data-layout="black"] .video-task {
+    display: none !important;
+}
