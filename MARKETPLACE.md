@@ -2,6 +2,8 @@
 
 ## Google Spreadsheet: Luigi's Missing Pizza Order
 
+![](img/luigi.jpg)
+
 **Subject:** Computer Science
 **Category:** Spreadsheet Mystery
 **Language:** English
@@ -12,6 +14,8 @@ Dive into a delicious puzzle where Luigi's pizza order has gone missing! Use you
 ---
 
 ## Exasol Database: Pirates of Palma
+
+![](img/exasol_pirates.png)
 
 **Subject:** Computer Science
 **Category:** Database Adventure
@@ -24,6 +28,8 @@ Ahoy, matey! Join the crew of the Palma and solve pirate-themed SQL challenges t
 
 ## Exasol Database: Der Syntaxschurke vom Exasol-Dschungel
 
+![](img/exasol_dschungel.png)
+
 **Subject:** Computer Science
 **Category:** Database Challenge
 **Language:** German
@@ -34,6 +40,8 @@ Enter the Exasol jungle where a syntax scoundrel is messing with SQL queries! So
 ---
 
 ## MongoDB Administrator Escape Room
+
+![](img/mongodb_xmas.png)
 
 **Subject:** Computer Science
 **Category:** Database Challenge

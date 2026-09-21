@@ -4,6 +4,10 @@ The screen at the front goes dark. Students huddle around terminals, racing to c
 
 CSCape turns a Raspberry Pi and a projector into a fully automated escape room for teaching computer science. It pairs a [reveal.js](https://revealjs.com/) presentation with a Python backend that continuously monitors whether tasks have been completed — files created, database rows inserted, services running on the network. When a check passes, the next slide appears automatically and plays a video to advance the story.
 
+## Marketplace
+
+Browse pre-built escape room games and modules in the CSCape [Marketplace](MARKETPLACE.md).
+
 ## How It Works
 
 1. The presentation (`index.html`) is displayed on a projector via a browser
