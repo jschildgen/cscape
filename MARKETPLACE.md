@@ -8,6 +8,7 @@
 **Category:** Spreadsheet Mystery
 **Language:** English
 **Platform:** Google Sheets
+**Link:** https://github.com/jschildgen/cscape/tree/main/cscape_spreadsheet
 
 Dive into a delicious puzzle where Luigi's pizza order has gone missing! Use your spreadsheet skills to track down the wayward delivery through data validation, formulas, and clever cell references. Perfect for beginners looking to sharpen their Google Sheets expertise.
 
@@ -21,8 +22,10 @@ Dive into a delicious puzzle where Luigi's pizza order has gone missing! Use you
 **Category:** Database Adventure
 **Language:** English
 **Platform:** Exasol Database
+**Link:** https://github.com/jschildgen/cscape_exasol_pirates
 
-Ahoy, matey! Join the crew of the Palma and solve pirate-themed SQL challenges to uncover hidden treasure. This escape room tests your knowledge of joins, aggregations, and analytical functions in Exasol's high-performance database environment.
+Ahoy, matey! Join the crew of the Palma and solve pirate-themed SQL challenges to uncover hidden treasure. Learn Exasol session management, IMPORT, profiling and distribution keys.
+
 
 ---
 
@@ -34,6 +37,7 @@ Ahoy, matey! Join the crew of the Palma and solve pirate-themed SQL challenges t
 **Category:** Database Challenge
 **Language:** German
 **Platform:** Exasol Database
+**Link:** https://github.com/jschildgen/cscape_exasol_dschungel
 
 Enter the Exasol jungle where a syntax scoundrel is messing with SQL queries! Solve tricky database puzzles to unmask the culprit and find your way out of the jungle. Ideal for advanced users wanting to test their Exasol knowledge.
 
@@ -47,6 +51,7 @@ Enter the Exasol jungle where a syntax scoundrel is messing with SQL queries! So
 **Category:** Database Challenge
 **Language:** German
 **Platform:** MongoDB / Raspberry Pi
+**Link:** Not yet published
 
 A MongoDB administrator escape room set at a Christmas market that goes dark. Players wire Raspberry Pis, set up data directories, initialize replica sets (`rs1`, `rs2`, `config`), start `mongos`, add shards, and insert, import and change documents in the database.
 
