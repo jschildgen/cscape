@@ -2,7 +2,7 @@
 
 ## Google Spreadsheet: Luigi's Missing Pizza Order
 
-![](img/luigi.jpg)
+![](cscape_spreadsheet/cscape_luigi.jpg)
 
 **Subject:** Computer Science
 **Category:** Spreadsheet Mystery
@@ -16,7 +16,7 @@ Dive into a delicious puzzle where Luigi's pizza order has gone missing! Use you
 
 ## Exasol Database: Pirates of Palma
 
-![](img/exasol_pirates.png)
+![](https://github.com/jschildgen/cscape_exasol_pirates/blob/main/exasol_pirates.png?raw=true)
 
 **Subject:** Computer Science
 **Category:** Database Adventure
@@ -31,7 +31,7 @@ Ahoy, matey! Join the crew of the Palma and solve pirate-themed SQL challenges t
 
 ## Exasol Database: Der Syntaxschurke vom Exasol-Dschungel
 
-![](img/exasol_dschungel.png)
+![](https://github.com/jschildgen/cscape_exasol_dschungel/blob/main/exasol_dschungel.png?raw=true)
 
 **Subject:** Computer Science
 **Category:** Database Challenge
@@ -45,13 +45,13 @@ Enter the Exasol jungle where a syntax scoundrel is messing with SQL queries! So
 
 ## MongoDB Administrator Escape Room
 
-![](img/mongodb_xmas.png)
+![](https://github.com/jschildgen/cscape_mongodb_xmas/blob/main/mongodb_xmas.png?raw=true)
 
 **Subject:** Computer Science
 **Category:** Database Challenge
 **Language:** German
 **Platform:** MongoDB / Raspberry Pi
-**Link:** Not yet published
+**Link:** https://github.com/jschildgen/cscape_mongodb_xmas
 
 A MongoDB administrator escape room set at a Christmas market that goes dark. Players wire Raspberry Pis, set up data directories, initialize replica sets (`rs1`, `rs2`, `config`), start `mongos`, add shards, and insert, import and change documents in the database.
 
